@@ -187,11 +187,13 @@ module Blazer
     end
   end
 
-  def self.send_failing_checks
+  def self.send_failing_checks(schedule: nil)
     emails = {}
     slack_channels = {}
 
-    Blazer::Check.includes(:query).where(state: ["failing", "error", "timed out", "disabled"]).find_each do |check|
+    checks = Blazer::Check.includes(:query).where(state: ["failing", "error", "timed out", "disabled"])
+    checks = checks.where(schedule: schedule) if schedule
+    checks.find_each do |check|
       check.split_emails.each do |email|
         (emails[email] ||= []) << check
       end

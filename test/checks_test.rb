@@ -68,6 +68,14 @@ class ChecksTest < ActionDispatch::IntegrationTest
     assert_emails 1 do
       Blazer.send_failing_checks
     end
+
+    assert_emails 1 do
+      Blazer.send_failing_checks(schedule: "5 minutes")
+    end
+
+    assert_emails 0 do
+      Blazer.send_failing_checks(schedule: "1 day")
+    end
   end
 
   def create_check(**attributes)
